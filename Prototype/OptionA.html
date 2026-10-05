@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f2f5f1">
+  <title>Margin — Ghi chú học tập</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,500;7..72,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1e302b;
+      --muted: #72817a;
+      --line: #dce4dd;
+      --paper: #fffefa;
+      --canvas: #f2f5f1;
+      --forest: #244a3e;
+      --forest-dark: #19392f;
+      --mint: #e6f2e9;
+      --mint-ink: #286145;
+      --yellow: #fff0a6;
+      --blue: #dceeff;
+      --shadow: 0 16px 48px rgb(30 48 43 / 10%);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: "DM Sans", "Segoe UI", sans-serif;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    button { font: inherit; }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      padding: 27px 18px 20px;
+      background: var(--forest-dark);
+      color: #edf5ee;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 10px 38px;
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 29px;
+      height: 29px;
+      place-items: center;
+      border: 1px solid #8ab39a;
+      border-radius: 9px 9px 9px 3px;
+      color: #bde3c7;
+      font-family: "Literata", Georgia, serif;
+      font-size: 17px;
+    }
+
+    .side-label {
+      margin: 0 10px 9px;
+      color: #a9c1b2;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 39px;
+      padding: 0 11px;
+      border-radius: 7px;
+      color: #d6e4da;
+      text-decoration: none;
+    }
+
+    .nav-item.current {
+      background: #315747;
+      color: #fff;
+    }
+
+    .nav-glyph { width: 18px; color: #a9c1b2; text-align: center; }
+
+    .notebook-list { display: grid; gap: 3px; }
+
+    .notebook-item {
+      padding: 8px 11px 8px 39px;
+      border-radius: 6px;
+      color: #c1d4c7;
+      text-decoration: none;
+    }
+
+    .notebook-item.selected { background: rgb(255 255 255 / 9%); color: white; }
+
+    .sidebar-bottom {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: auto;
+      padding: 15px 8px 0;
+      border-top: 1px solid rgb(255 255 255 / 13%);
+    }
+
+    .avatar {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border-radius: 50%;
+      background: #d9a17e;
+      color: #36281f;
+      font-weight: 700;
+    }
+
+    .profile-name { font-weight: 600; }
+    .profile-meta { color: #a9c1b2; font-size: 12px; }
+
+    .workspace { min-width: 0; }
+
+    .topbar {
+      display: flex;
+      min-height: 67px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(20px, 5vw, 68px);
+      border-bottom: 1px solid var(--line);
+      background: rgb(255 254 250 / 70%);
+    }
+
+    .crumbs { color: var(--muted); }
+    .crumbs strong { color: var(--ink); font-weight: 600; }
+
+    .top-actions { display: flex; align-items: center; gap: 14px; }
+
+    .saved-state {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .saved-dot { width: 7px; height: 7px; border-radius: 50%; background: #5c9b6c; }
+
+    .reset-button {
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .reset-button:hover { background: white; }
+
+    main {
+      width: min(100%, 1060px);
+      margin: 0 auto;
+      padding: 38px clamp(20px, 5vw, 68px) 64px;
+    }
+
+    .page-heading {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--mint-ink);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+    }
+
+    h1, h2, p { margin-top: 0; }
+
+    h1 {
+      margin-bottom: 5px;
+      font-family: "Literata", Georgia, serif;
+      font-size: clamp(25px, 3vw, 32px);
+      font-weight: 600;
+      line-height: 1.22;
+      letter-spacing: 0;
+    }
+
+    .subtitle { margin-bottom: 0; color: var(--muted); }
+
+    .date-pill {
+      flex: 0 0 auto;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: #53645a;
+      font-size: 12px;
+    }
+
+    .study-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      align-items: start;
+      gap: 23px;
+    }
+
+    .study-layout.panel-open { grid-template-columns: minmax(0, 1fr) 238px; }
+
+    .note-sheet {
+      min-width: 0;
+      padding: clamp(23px, 4vw, 42px) clamp(22px, 4vw, 46px);
+      border: 1px solid #e6e8e0;
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: 0 4px 18px rgb(30 48 43 / 4%);
+    }
+
+    .note-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 25px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .topic-dot { width: 8px; height: 8px; border-radius: 2px; background: #d68a66; }
+
+    h2 {
+      margin-bottom: 12px;
+      font-family: "Literata", Georgia, serif;
+      font-size: 21px;
+      font-weight: 600;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+
+    .note-copy {
+      color: #34453d;
+      font-family: "Literata", Georgia, serif;
+      font-size: 16px;
+      line-height: 1.9;
+    }
+
+    .note-copy p { margin-bottom: 18px; }
+
+    .note-copy h3 {
+      margin: 34px 0 11px;
+      color: var(--forest);
+      font-family: "DM Sans", "Segoe UI", sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.45;
+      letter-spacing: 0;
+    }
+
+    .user-highlight {
+      padding: 1px 2px;
+      border-radius: 2px;
+      background: #ffe78a;
+      color: inherit;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+    }
+
+    .selectable-highlight {
+      padding: 1px 3px;
+      border-radius: 3px;
+      background: var(--yellow);
+      color: inherit;
+      cursor: pointer;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+    }
+
+    .selectable-highlight[aria-pressed="true"] {
+      outline: 2px solid #74a080;
+      outline-offset: 2px;
+    }
+
+    .selectable-highlight[data-selection="unsupported"] {
+      background: #f5c4c7;
+      color: #852329;
+    }
+
+    .selectable-highlight[data-selection="unsupported"][aria-pressed="true"] {
+      outline-color: #bd3942;
+    }
+
+    .selectable-highlight:focus-visible {
+      outline: 2px solid var(--forest);
+      outline-offset: 3px;
+    }
+
+    .evidence-highlight {
+      padding: 1px 2px;
+      border-radius: 3px;
+      background: var(--blue);
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+      transition: background-color .25s ease;
+    }
+
+    .note-rule { height: 1px; margin: 27px 0 18px; background: var(--line); }
+
+    .note-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .inline-note {
+      display: none;
+      margin-top: 14px;
+      padding: 11px 13px;
+      border-left: 3px solid #70a07b;
+      background: #f0f6ef;
+      color: #3b5543;
+      font-size: 13px;
+    }
+
+    .inline-note.visible { display: block; animation: rise-in .2s ease-out; }
+
+    .ai-panel {
+      position: sticky;
+      top: 24px;
+      overflow: hidden;
+      border: 1px solid #cfded2;
+      border-radius: 8px;
+      background: #fffefa;
+      box-shadow: var(--shadow);
+      animation: rise-in .24s ease-out;
+    }
+
+    .ai-panel[hidden] { display: none; }
+
+    .panel-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 15px;
+      border-bottom: 1px solid #e5ebe5;
+      background: #f7faf6;
+    }
+
+    .ai-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--forest);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .ai-spark {
+      display: grid;
+      width: 23px;
+      height: 23px;
+      place-items: center;
+      border-radius: 7px;
+      background: var(--mint);
+      color: var(--mint-ink);
+      font-size: 14px;
+    }
+
+    .close-button {
+      display: grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: #52635a;
+      cursor: pointer;
+      font-size: 21px;
+      line-height: 1;
+    }
+
+    .close-button:hover { background: #e9efea; }
+
+    .panel-content { padding: 17px 16px 16px; }
+
+    .panel-kicker {
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .75px;
+      text-transform: uppercase;
+    }
+
+    .explanation {
+      margin-bottom: 16px;
+      color: #30443a;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .uncertainty {
+      display: none;
+      margin: 0 0 15px;
+      padding: 10px 11px;
+      border: 1px solid #edcfad;
+      border-radius: 6px;
+      background: #fff7e9;
+      color: #704c2f;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .uncertainty.visible { display: block; }
+
+    .evidence-box {
+      padding: 11px 12px;
+      border-radius: 6px;
+      background: #f1f7fb;
+    }
+
+    .evidence-title {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 6px;
+      color: #365a70;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .evidence-swatch { width: 10px; height: 10px; border-radius: 2px; background: #b7dcf5; }
+    .evidence-copy { margin: 0; color: #5b7180; font-size: 11px; line-height: 1.5; }
+
+    .source-limit { margin: 12px 0 0; color: var(--muted); font-size: 11px; }
+
+    .save-note {
+      width: 100%;
+      margin-top: 16px;
+      padding: 10px 12px;
+      border: 0;
+      border-radius: 6px;
+      background: var(--forest);
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background .15s ease, transform .15s ease;
+    }
+
+    .save-note:hover { background: #315f4e; }
+    .save-note:active { transform: translateY(1px); }
+    .save-note:disabled { background: #e8efe9; color: #4f725a; cursor: default; }
+
+    .experiment-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 22px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    .experiment-label { color: var(--muted); font-size: 12px; }
+
+    .mode-switch {
+      display: inline-flex;
+      padding: 3px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #e9eee9;
+    }
+
+    .mode-button {
+      padding: 6px 9px;
+      border: 0;
+      border-radius: 5px;
+      background: transparent;
+      color: #5d6d63;
+      cursor: pointer;
+      font-size: 11px;
+    }
+
+    .mode-button[aria-pressed="true"] {
+      background: white;
+      color: var(--forest-dark);
+      box-shadow: 0 1px 3px rgb(30 48 43 / 12%);
+      font-weight: 700;
+    }
+
+    .explain-button {
+      position: fixed;
+      z-index: 7;
+      display: inline-flex;
+      min-height: 38px;
+      align-items: center;
+      gap: 8px;
+      padding: 0 12px;
+      border: 0;
+      border-radius: 6px;
+      background: var(--forest);
+      color: white;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: 0 5px 16px rgb(23 63 105 / 24%);
+      white-space: nowrap;
+      animation: rise-in .16s ease-out;
+    }
+
+    .explain-button[hidden] { display: none; }
+    .explain-button:hover { background: #245f93; }
+    .explain-button:active { transform: translateY(1px); }
+    .button-glyph { font-size: 17px; line-height: 1; }
+
+    .selection-label { color: var(--muted); font-size: 12px; }
+
+    .selection-toolbar {
+      position: fixed;
+      z-index: 10;
+      display: flex;
+      gap: 4px;
+      padding: 5px;
+      border: 1px solid #35584a;
+      border-radius: 7px;
+      background: var(--forest-dark);
+      box-shadow: 0 8px 24px rgb(20 39 31 / 24%);
+    }
+
+    .selection-toolbar[hidden] { display: none; }
+
+    .selection-action {
+      min-height: 32px;
+      padding: 0 10px;
+      border: 0;
+      border-radius: 4px;
+      background: transparent;
+      color: white;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .selection-action:hover { background: #315747; }
+    .selection-action[hidden] { display: none; }
+
+    .feedback {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 5;
+      padding: 11px 15px;
+      border-radius: 7px;
+      background: var(--forest-dark);
+      color: white;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(7px);
+      transition: opacity .2s ease, transform .2s ease;
+    }
+
+    .feedback.visible { opacity: 1; transform: translateY(0); }
+
+    @keyframes rise-in {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 1100px) {
+      .study-layout.panel-open { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    @media (max-width: 900px) {
+      .app-shell { grid-template-columns: 206px minmax(0, 1fr); }
+      .study-layout, .study-layout.panel-open { grid-template-columns: minmax(0, 1fr); }
+      .ai-panel { position: relative; top: auto; }
+    }
+
+    @media (max-width: 640px) {
+      .app-shell { display: block; }
+      .sidebar { display: none; }
+      .topbar { min-height: 57px; padding: 0 17px; }
+      .saved-state { display: none; }
+      main { padding: 26px 15px 40px; }
+      .page-heading { align-items: flex-start; }
+      .date-pill { margin-top: 3px; }
+      .note-sheet { padding: 22px 19px; }
+      .note-copy { font-size: 15px; }
+      .experiment-bar { align-items: flex-start; flex-direction: column; }
+      .mode-switch { width: 100%; }
+      .mode-button { flex: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+    :root {
+      --ink: #202a33;
+      --muted: #667580;
+      --line: #d5dde3;
+      --paper: #fff;
+      --canvas: #fff;
+      --forest: #174f87;
+      --forest-dark: #173f69;
+      --mint: #e7f1fa;
+      --mint-ink: #245b8d;
+      --shadow: 0 8px 24px rgb(24 45 65 / 12%);
+    }
+
+    body { background: #fff; color: var(--ink); }
+
+    .app-shell {
+      grid-template-columns: 306px minmax(0, 1fr);
+      grid-template-rows: 64px minmax(0, 1fr);
+      min-height: 100vh;
+      background: #fff;
+    }
+
+    .app-shell.sidebar-collapsed { grid-template-columns: 0 minmax(0, 1fr); }
+
+    .sidebar {
+      grid-column: 1;
+      grid-row: 2;
+      position: sticky;
+      top: 64px;
+      align-self: start;
+      height: calc(100vh - 64px);
+      overflow: auto;
+      padding: 0;
+      border-right: 1px solid #cbd5dd;
+      background: #f1f5f8;
+      color: #27343d;
+      transition: transform .2s ease;
+    }
+
+    .sidebar-collapsed .sidebar { overflow: hidden; border-right: 0; }
+
+    .outline-header {
+      display: flex;
+      min-height: 47px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      border-bottom: 1px solid #cbd5dd;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .4px;
+    }
+
+    .outline-close {
+      width: 28px;
+      height: 28px;
+      border: 0;
+      border-radius: 4px;
+      background: transparent;
+      color: #53616c;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .outline-close:hover { background: #e2eaf0; }
+
+    .outline-course {
+      display: flex;
+      min-height: 47px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      border-bottom: 1px solid #cbd5dd;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .outline-course small { display: block; margin-top: 2px; color: var(--muted); font-size: 10px; font-weight: 500; }
+    .outline-label { min-width: 0; flex: 1 1 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .outline-group-label {
+      margin: 0;
+      padding: 15px 14px 7px;
+      color: #53616c;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .course-nav { display: grid; width: 100%; min-width: 0; gap: 2px; padding: 0 7px 14px; }
+
+    .course-nav-link {
+      display: flex;
+      width: 100%;
+      min-width: 0;
+      min-height: 39px;
+      align-items: center;
+      gap: 9px;
+      padding: 6px 9px;
+      border-left: 3px solid transparent;
+      border-radius: 3px;
+      color: #364550;
+      font-size: 12px;
+      line-height: 1.35;
+      text-decoration: none;
+    }
+
+    .course-nav-link:hover { background: #e6edf2; }
+    .course-nav-link.current { border-left-color: #d94b55; background: #e4eef7; color: #174f87; font-weight: 700; }
+    .course-nav-icon { flex: 0 0 18px; color: #6b8292; text-align: center; }
+    .course-nav-link.current .course-nav-icon { color: #245e91; }
+    .course-nav-status { margin-left: auto; color: #245e91; font-size: 10px; white-space: nowrap; }
+
+    .sidebar-bottom {
+      position: sticky;
+      bottom: 0;
+      margin-top: auto;
+      padding: 12px 15px;
+      border-top: 1px solid #cbd5dd;
+      background: #f1f5f8;
+      color: #27343d;
+    }
+
+    .profile-meta { color: #667580; }
+    .workspace { display: contents; }
+
+    .topbar {
+      position: sticky;
+      z-index: 5;
+      top: 0;
+      grid-column: 1 / -1;
+      grid-row: 1;
+      display: flex;
+      min-height: 64px;
+      align-items: center;
+      gap: 13px;
+      padding: 0 22px;
+      border-bottom: 1px solid #d6dfe5;
+      background: #fff;
+    }
+
+    .header-icon {
+      display: grid;
+      width: 32px;
+      height: 34px;
+      flex: 0 0 auto;
+      place-items: center;
+      border: 0;
+      border-radius: 5px;
+      background: transparent;
+      color: #53616a;
+      cursor: pointer;
+      font-size: 21px;
+    }
+
+    .header-icon:hover { background: #edf2f5; }
+
+    .course-title {
+      min-width: 120px;
+      flex: 1 1 auto;
+      overflow: hidden;
+      color: #333e46;
+      font-size: 14px;
+      font-weight: 600;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .header-progress {
+      display: flex;
+      width: min(230px, 24vw);
+      flex: 0 1 230px;
+      align-items: center;
+      gap: 10px;
+      color: #53616a;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .progress-track { height: 5px; flex: 1; overflow: hidden; border-radius: 99px; background: #dfe5e9; }
+    .progress-fill { display: block; width: 9%; height: 100%; border-radius: inherit; background: #1764a5; transition: width .2s ease; }
+
+    .ask-ai-header {
+      display: inline-flex;
+      min-height: 36px;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 7px;
+      padding: 0 10px;
+      border: 0;
+      border-radius: 5px;
+      background: transparent;
+      color: #3f4c55;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .ask-ai-header:hover { background: #edf3f7; }
+    .ask-ai-glyph { color: #7353a4; font-size: 17px; }
+
+    .header-avatar {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      flex: 0 0 auto;
+      place-items: center;
+      border: 0;
+      border-radius: 50%;
+      background: #e3edf7;
+      color: #24547c;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    main {
+      grid-column: 2;
+      grid-row: 2;
+      width: 100%;
+      max-width: none;
+      min-width: 0;
+      margin: 0;
+      padding: 28px clamp(24px, 4vw, 58px) 54px;
+      background: #fff;
+    }
+
+    .page-heading { max-width: 1120px; margin: 0 auto 18px; }
+    .eyebrow { color: #315e80; }
+    h1 { font-size: 29px; }
+
+    .study-layout { width: min(100%, 1120px); margin: 0 auto; }
+    .study-layout.panel-open { grid-template-columns: minmax(0, 1fr) 260px; }
+
+    .note-sheet {
+      width: 100%;
+      max-width: 100%;
+      padding: 22px clamp(20px, 4vw, 54px) 28px;
+      border: 0;
+      border-radius: 0;
+      background: #fff;
+      box-shadow: none;
+    }
+
+    .note-copy { --reader-size: 16px; font-size: var(--reader-size); }
+    .note-copy h3 { scroll-margin-top: 84px; }
+
+    .reader-toolbar {
+      display: flex;
+      min-height: 48px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 6px 9px;
+      border-top: 1px solid #dce3e8;
+      border-bottom: 1px solid #dce3e8;
+      background: #fff;
+    }
+
+    .reader-tool-group { display: flex; align-items: center; gap: 4px; }
+
+    .reader-tool {
+      display: inline-flex;
+      min-width: 34px;
+      height: 32px;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 0 8px;
+      border: 0;
+      border-radius: 5px;
+      background: transparent;
+      color: #53616a;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .reader-tool:hover { background: #eef3f6; }
+    .reader-scale { min-width: 42px; color: #53616a; font-size: 11px; text-align: center; }
+    .reader-divider { width: 1px; height: 23px; margin: 0 5px; background: #dce3e8; }
+    .reader-position { min-width: 52px; color: #46545e; font-size: 12px; text-align: center; }
+
+    .helpful-row {
+      display: flex;
+      min-height: 57px;
+      align-items: center;
+      gap: 15px;
+      padding: 10px 0;
+      border-bottom: 1px solid #dce3e8;
+      color: #414d56;
+      font-size: 13px;
+    }
+
+    .helpful-row strong { margin-right: 3px; font-weight: 600; }
+
+    .helpful-button {
+      width: 33px;
+      height: 33px;
+      border: 0;
+      border-radius: 5px;
+      background: transparent;
+      color: #53616a;
+      cursor: pointer;
+      font-size: 17px;
+    }
+
+    .helpful-button:hover, .helpful-button[aria-pressed="true"] { background: #e9f1f7; color: #174f87; }
+
+    .lesson-navigation {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 12px;
+    }
+
+    .lesson-nav-button {
+      display: inline-flex;
+      min-height: 39px;
+      align-items: center;
+      gap: 8px;
+      padding: 0 15px;
+      border: 1px solid #ccd5dc;
+      border-radius: 6px;
+      background: #fff;
+      color: #34434e;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .lesson-nav-button.primary { border-color: #174f87; background: #174f87; color: #fff; }
+    .lesson-nav-button:hover { filter: brightness(.97); }
+    .sidebar-backdrop { display: none; }
+
+    @media (max-width: 1100px) {
+      .study-layout.panel-open { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    @media (max-width: 900px) {
+      .app-shell { grid-template-columns: 260px minmax(0, 1fr); }
+      .study-layout, .study-layout.panel-open { grid-template-columns: minmax(0, 1fr); }
+      .ai-panel { position: relative; top: auto; }
+      main { padding-inline: 22px; }
+    }
+
+    @media (max-width: 760px) {
+      .app-shell { grid-template-columns: minmax(0, 1fr); grid-template-rows: 60px minmax(0, 1fr); }
+      .sidebar {
+        position: fixed;
+        z-index: 9;
+        top: 60px;
+        bottom: 0;
+        left: 0;
+        width: min(306px, 86vw);
+        height: auto;
+        transform: translateX(-102%);
+        visibility: hidden;
+        box-shadow: 8px 0 25px rgb(25 43 57 / 12%);
+      }
+      .sidebar-open .sidebar { transform: translateX(0); visibility: visible; }
+      .sidebar-backdrop:not([hidden]) {
+        position: fixed;
+        z-index: 8;
+        inset: 60px 0 0;
+        display: block;
+        border: 0;
+        background: rgb(27 41 52 / 24%);
+      }
+      .topbar { grid-column: 1; min-height: 60px; gap: 6px; padding: 0 10px; }
+      .course-title { font-size: 12px; }
+      .header-progress { width: auto; flex: 0 0 auto; }
+      .progress-track { display: none; }
+      .ask-ai-header { padding-inline: 7px; font-size: 11px; }
+      main { grid-column: 1; grid-row: 2; padding: 22px 14px 38px; }
+      .page-heading { align-items: flex-start; }
+      h1 { font-size: 25px; }
+      .note-sheet { padding: 16px 7px 22px; }
+      .reader-toolbar { flex-wrap: wrap; }
+      .helpful-row { flex-wrap: wrap; gap: 8px; }
+      .lesson-navigation { align-items: stretch; }
+      .lesson-nav-button { justify-content: center; padding-inline: 10px; }
+    }
+
+    @media (max-width: 430px) {
+      .header-progress { font-size: 10px; }
+      .ask-ai-header { font-size: 0; }
+      .ask-ai-glyph { font-size: 18px; }
+      .header-avatar { width: 30px; height: 30px; }
+      .date-pill { font-size: 10px; }
+      .reader-toolbar { justify-content: center; }
+      .lesson-nav-button { font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell" id="appShell">
+    <aside class="sidebar" aria-label="Mục lục bài học">
+      <div class="outline-header"><span>NỘI DUNG BÀI HỌC</span><button class="outline-close" id="outlineClose" type="button" aria-label="Đóng mục lục">×</button></div>
+      <div class="outline-course"><div>TRÍ NHỚ &amp; TRUY XUẤT<small>PERSONAL LEARNING NOTES</small></div><span aria-hidden="true">⌄</span></div>
+      <p class="outline-group-label">BÀI GIẢNG</p>
+      <nav class="course-nav" aria-label="Các mục trong bài">
+        <a class="course-nav-link current" href="#section-1"><span class="course-nav-icon" aria-hidden="true">▣</span><span class="outline-label">Slide: Gợi nhớ phụ thuộc ngữ cảnh</span><span class="course-nav-status">Đang học</span></a>
+        <p class="outline-group-label">NỘI DUNG BÀI HỌC</p>
+        <a class="course-nav-link" data-section-index="0" href="#section-1"><span class="course-nav-icon" aria-hidden="true">›</span><span class="outline-label">1. Trí nhớ không phải máy quay</span></a>
+        <a class="course-nav-link" data-section-index="1" href="#section-2"><span class="course-nav-icon" aria-hidden="true">›</span><span class="outline-label">2. Gợi ý truy xuất</span></a>
+        <a class="course-nav-link" data-section-index="2" href="#section-3"><span class="course-nav-icon" aria-hidden="true">›</span><span class="outline-label">3. Thí nghiệm thợ lặn</span></a>
+        <a class="course-nav-link" data-section-index="3" href="#section-4"><span class="course-nav-icon" aria-hidden="true">›</span><span class="outline-label">4. Vì sao ngữ cảnh giúp ích?</span></a>
+        <a class="course-nav-link" data-section-index="4" href="#section-5"><span class="course-nav-icon" aria-hidden="true">›</span><span class="outline-label">5. Các loại ngữ cảnh</span></a>
+        <a class="course-nav-link" data-section-index="5" href="#section-6"><span class="course-nav-icon" aria-hidden="true">›</span><span class="outline-label">6. Học linh hoạt</span></a>
+        <a class="course-nav-link" data-section-index="6" href="#section-7"><span class="course-nav-icon" aria-hidden="true">›</span><span class="outline-label">7. Tâm trạng và trí nhớ</span></a>
+        <a class="course-nav-link" data-section-index="7" href="#section-8"><span class="course-nav-icon" aria-hidden="true">›</span><span class="outline-label">8. Cách vận dụng</span></a>
+        <a class="course-nav-link" data-section-index="8" href="#section-9"><span class="course-nav-icon" aria-hidden="true">›</span><span class="outline-label">9. Lượt ôn tập ngắn</span></a>
+        <a class="course-nav-link" data-section-index="9" href="#section-10"><span class="course-nav-icon" aria-hidden="true">›</span><span class="outline-label">10. Giới hạn và lưu ý</span></a>
+        <a class="course-nav-link" data-section-index="10" href="#section-11"><span class="course-nav-icon" aria-hidden="true">›</span><span class="outline-label">11. Tóm tắt</span></a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="avatar" aria-hidden="true">M</div>
+        <div><div class="profile-name">Minh</div><div class="profile-meta">Học viên</div></div>
+      </div>
+    </aside>
+    <button class="sidebar-backdrop" id="sidebarBackdrop" type="button" aria-label="Đóng mục lục" hidden></button>
+
+    <div class="workspace">
+      <header class="topbar">
+        <button class="header-icon" id="sidebarToggle" type="button" aria-label="Ẩn hoặc mở mục lục" title="Mục lục">☰</button>
+        <a class="header-icon" href="#readerTitle" aria-label="Về đầu bài" title="Về đầu bài">‹</a>
+        <div class="course-title">Ngày 3 · Design the Experiment — AI Notes: Personal Learning Notes</div>
+        <div class="header-progress" aria-label="Tiến độ bài học"><span id="progressLabel">1 / 11</span><div class="progress-track"><span class="progress-fill" id="progressFill"></span></div></div>
+        <button class="ask-ai-header" id="askAIButton" type="button"><span class="ask-ai-glyph" aria-hidden="true">✦</span>Đặt câu hỏi với AI</button>
+        <button class="header-avatar" type="button" aria-label="Tài khoản học viên">M</button>
+      </header>
+
+      <main id="notes">
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Ôn tập · Chương 04</p>
+            <h1 id="readerTitle">Tâm lý học nhận thức</h1>
+            <p class="subtitle">Bài giảng: mã hóa, truy xuất và cách học hiệu quả</p>
+          </div>
+          <span class="date-pill">18 phút đọc</span>
+        </div>
+
+        <div class="study-layout">
+          <article class="note-sheet" aria-label="Ghi chú học tập">
+            <div class="note-meta"><span class="topic-dot" aria-hidden="true"></span> Bài giảng tuần 4 <span aria-hidden="true">·</span> 18 phút đọc</div>
+            <h2>Gợi nhớ phụ thuộc vào ngữ cảnh</h2>
+            <div class="note-copy" id="noteCopy">
+              <h3 id="section-1">1. Trí nhớ không phải một chiếc máy quay</h3>
+              <p>Khi học một thông tin mới, não bộ không lưu trữ nó một cách biệt lập. Những gì ta gọi là “nhớ” là kết quả của nhiều hoạt động phối hợp: tiếp nhận thông tin, liên kết thông tin với điều đã biết, củng cố dấu vết trí nhớ và tìm lại dấu vết ấy khi cần.</p>
+              <p>Để hình dung quá trình này, ta thường chia trí nhớ thành ba giai đoạn. <span data-evidence="encoding"><mark class="selectable-highlight" data-selection="encoding" role="button" tabindex="0" aria-pressed="false">Mã hóa</mark> là lúc thông tin được chú ý và chuyển thành một biểu diễn mà não có thể xử lý.</span> <strong>Lưu giữ</strong> là việc duy trì những liên kết đó theo thời gian. <strong>Truy xuất</strong> là lúc ta kích hoạt lại thông tin đã lưu. Ba giai đoạn có liên quan nhưng không đồng nhất: một người có thể đã học một khái niệm nhưng tạm thời không tìm được nó khi làm bài kiểm tra.</p>
+              <p>Trí nhớ cũng không hoạt động như việc phát lại nguyên vẹn một đoạn phim. Mỗi lần nhớ lại, ta dựng lại sự kiện từ các dấu vết còn lại, kiến thức nền và những gợi ý ở hiện tại. Vì thế, một ký ức có thể rõ ràng nhưng vẫn thiếu chi tiết, hoặc chịu ảnh hưởng bởi cách câu hỏi được đặt ra.</p>
+
+              <h3 id="section-2">2. Ngữ cảnh tạo ra những gợi ý truy xuất</h3>
+              <p><span data-evidence="cues">Những tín hiệu xuất hiện cùng lúc, như <mark class="selectable-highlight" data-selection="cues" role="button" tabindex="0" aria-pressed="false">địa điểm, tâm trạng hoặc âm thanh</mark>, cũng được liên kết với ký ức đó.</span> Chúng tạo thành một phần của hoàn cảnh học tập, bên cạnh nội dung chính. Một căn phòng, mùi cà phê, tiếng mưa hoặc trạng thái tập trung đều có thể trở thành gợi ý nếu chúng hiện diện khi ta tiếp nhận thông tin.</p>
+              <p>Trong bài giảng này, <mark class="selectable-highlight" data-selection="context" role="button" tabindex="0" aria-pressed="true">trí nhớ phụ thuộc ngữ cảnh</mark> có nghĩa là khả năng truy xuất đôi khi tốt hơn khi một vài đặc điểm của hoàn cảnh lúc nhớ tương tự hoàn cảnh lúc học. Ngữ cảnh không nhất thiết phải là toàn bộ căn phòng. Chỉ một tín hiệu liên quan cũng có thể gợi mở phần thông tin từng được liên kết với nó.</p>
+              <p>Hãy tưởng tượng bạn đọc một ý tưởng trong thư viện, bên cạnh cửa sổ có mưa. Vài ngày sau, tiếng mưa lại vang lên khi bạn đang ôn bài. Âm thanh đó không tự chứa kiến thức, nhưng có thể nhắc bạn về buổi học và dẫn tới những ý tưởng đã đọc. Gợi ý hoạt động như một chiếc móc: nó làm tăng cơ hội tìm thấy một ký ức, chứ không đảm bảo ký ức sẽ xuất hiện chính xác.</p>
+
+              <h3 id="section-3">3. Thí nghiệm kinh điển với thợ lặn</h3>
+              <p><span data-evidence="experiment">Thí nghiệm của Godden và Baddeley cho thấy thợ lặn nhớ từ tốt hơn khi môi trường kiểm tra trùng với môi trường lúc học.</span> Người tham gia học một danh sách từ trên bờ hoặc dưới nước, sau đó được kiểm tra ở một trong hai môi trường này. Nhìn chung, khả năng nhớ tốt hơn khi nơi kiểm tra trùng với nơi học so với khi hai bối cảnh khác nhau.</p>
+              <p>Kết quả này thường được dùng để minh họa vai trò của ngữ cảnh vật lý trong truy xuất. Khi học và kiểm tra cùng diễn ra dưới nước, một số tín hiệu môi trường được lặp lại; chúng có thể hỗ trợ việc tìm lại thông tin. Khi bối cảnh thay đổi, các gợi ý đó không còn sẵn có theo cùng cách.</p>
+              <p>Điều quan trọng là không diễn giải thí nghiệm thành quy tắc “chỉ học ở nơi sẽ thi”. Nó cho thấy ngữ cảnh có thể tạo khác biệt trong một nhiệm vụ cụ thể, không chứng minh rằng phải tái tạo nguyên vẹn môi trường để học tốt. Hiệu quả còn phụ thuộc vào nội dung, cách mã hóa, độ tương đồng của gợi ý và mức độ luyện tập truy xuất.</p>
+
+              <h3 id="section-4">4. Vì sao sự trùng khớp có thể giúp ích?</h3>
+              <p>Một cách giải thích là nguyên tắc đặc hiệu của mã hóa: những đặc điểm được xử lý trong lúc học có thể trở thành gợi ý hữu ích khi nhớ lại. Nếu một khái niệm được học cùng với ví dụ, câu hỏi hoặc hình ảnh nhất định, việc gặp lại một phần gợi ý ấy có thể giúp kích hoạt các liên kết liên quan.</p>
+              <p><span data-evidence="distinct">Gợi ý thường hữu ích khi nó <mark class="selectable-highlight" data-selection="distinct" role="button" tabindex="0" aria-pressed="false">có tính phân biệt</mark>. Một tín hiệu quá chung, chẳng hạn “mình đang ở trong nhà”, có thể gắn với hàng nghìn trải nghiệm. Một ví dụ cụ thể hoặc một câu hỏi được đặt đúng chỗ thường thu hẹp phạm vi tìm kiếm tốt hơn.</span> Nói cách khác, gợi ý tốt không chỉ quen thuộc; nó còn giúp phân biệt ký ức cần tìm với những ký ức khác.</p>
+              <p><span data-evidence="context">Điều này giúp giải thích vì sao việc quay lại môi trường học tập quen thuộc có thể khiến ta nhớ lại kiến thức dễ dàng hơn.</span> Tuy nhiên, sự quen thuộc cũng có thể tạo cảm giác “mình biết điều này” mà không giúp ta tự trình bày được nội dung. Đọc lại trang sách thường tạo cảm giác trôi chảy, nhưng cảm giác đó không giống với việc chủ động truy xuất câu trả lời.</p>
+
+              <h3 id="section-5">5. Những loại ngữ cảnh thường gặp</h3>
+              <p><strong>Ngữ cảnh vật lý</strong> gồm địa điểm, ánh sáng, âm thanh và cách bố trí không gian. Đây là loại dễ hình dung nhất, nhưng hiếm khi là loại duy nhất có ảnh hưởng. Một số người thấy nơi học quen thuộc giúp họ bắt đầu tập trung; những người khác có thể học tốt ở nhiều nơi nếu giữ được thói quen và phương pháp.</p>
+              <p><strong>Ngữ cảnh bên trong</strong> gồm tâm trạng, mức tỉnh táo, mức căng thẳng và trạng thái cơ thể. Một trạng thái tương tự đôi khi gợi lại thông tin đã học trong trạng thái ấy, nhưng hiệu ứng không đơn giản và không phải lý do để cố tạo ra tâm trạng tiêu cực trước khi học hoặc kiểm tra.</p>
+              <p><strong>Ngữ cảnh xã hội và nhiệm vụ</strong> gồm người đang cùng học, vai trò của ta trong hoạt động, mục tiêu và dạng câu hỏi. Ta có thể nhớ một khái niệm khi giải thích cho bạn nhưng lại khó nhận ra nó trong câu hỏi trắc nghiệm, bởi mỗi nhiệm vụ đặt ra những yêu cầu truy xuất khác nhau.</p>
+              <p><strong>Ngữ cảnh ngôn ngữ</strong> cũng đáng chú ý. Một thuật ngữ thường được hiểu tốt hơn khi ta nhớ định nghĩa, ví dụ, từ trái nghĩa và vấn đề mà thuật ngữ đó giải quyết. Ghi chú chỉ có một danh sách từ rời rạc sẽ cung cấp ít đường dẫn truy xuất hơn một ghi chú thể hiện quan hệ giữa các ý.</p>
+
+              <h3 id="section-6">6. Ngữ cảnh khác với việc học thuộc vị trí</h3>
+              <p>Dựa vào một tín hiệu duy nhất có thể khiến việc nhớ trở nên mong manh. Nếu chỉ nhớ rằng một định nghĩa nằm ở góc dưới bên phải của trang, ta có thể lúng túng khi nội dung được trình bày theo bố cục khác. Học hiệu quả hơn khi kiến thức được nối với nhiều gợi ý: ý nghĩa, ví dụ, câu hỏi, hình ảnh và kiến thức nền.</p>
+              <p>Ta có thể tự kiểm tra bằng cách đóng tài liệu và hỏi: “Khái niệm này giải thích điều gì?”, “Một ví dụ mới của nó là gì?” hoặc “Nó khác khái niệm gần nhất ở điểm nào?”. Những câu hỏi buộc ta tạo ra đường dẫn truy xuất đa dạng thay vì chỉ nhận ra văn bản khi nhìn thấy lại.</p>
+              <p>Điều này không có nghĩa môi trường học tập không quan trọng. Một không gian ít xao nhãng có thể giúp duy trì chú ý, còn một lịch học ổn định giảm công sức bắt đầu. Nhưng nếu mục tiêu là sử dụng kiến thức linh hoạt, hãy thực hành truy xuất trong nhiều bối cảnh và bằng nhiều cách diễn đạt.</p>
+
+              <h3 id="section-7">7. Tâm trạng và trí nhớ: cần hiểu một cách thận trọng</h3>
+              <p>Trong đời sống, ta thường nhận thấy một bài hát hoặc một mùi hương khiến một giai đoạn cũ ùa về. Những trải nghiệm như vậy gợi ý rằng trạng thái cảm xúc và tín hiệu cảm giác có thể tham gia vào mạng lưới liên tưởng. Tuy nhiên, một ví dụ cá nhân không đủ để kết luận rằng tâm trạng luôn cải thiện trí nhớ theo một hướng cố định.</p>
+              <p>Trạng thái cảm xúc có thể ảnh hưởng đến điều gì được chú ý và cách ta diễn giải sự việc. Căng thẳng vừa phải đôi khi khiến ta cảnh giác hơn, nhưng căng thẳng cao kéo dài có thể làm việc tập trung và truy xuất trở nên khó khăn. Khi tự học, cách tiếp cận hữu ích là duy trì giấc ngủ, nghỉ ngơi và nhịp học phù hợp, thay vì cố tái tạo cảm xúc của một buổi học trước.</p>
+
+              <h3 id="section-8">8. Cách vận dụng khi tự học</h3>
+              <p><strong>Bước một: tạo gợi ý có nghĩa.</strong> Khi ghi lại kiến thức, đừng chỉ chép định nghĩa. Hãy thêm câu hỏi mà kiến thức trả lời, một ví dụ tự nghĩ ra và mối liên hệ với nội dung đã học. Các gợi ý này cho bạn nhiều cách bắt đầu truy xuất.</p>
+              <p><span data-evidence="review"><strong>Bước hai:</strong> <mark class="selectable-highlight" data-selection="review" role="button" tabindex="0" aria-pressed="false">luyện nhớ trước khi xem đáp án</mark>. Đóng ghi chú, viết ra điều mình nhớ hoặc tự giải thích khái niệm thành tiếng.</span> Sau đó mở tài liệu để đối chiếu và sửa phần thiếu. Đây là cách phát hiện lỗ hổng thực tế hơn việc đọc đi đọc lại cho đến khi thấy quen.</p>
+              <p><strong>Bước ba: phân bố các lần ôn.</strong> Thay vì dồn mọi nỗ lực vào một buổi, hãy quay lại nội dung sau những khoảng nghỉ. Mỗi lần trì hoãn một chút rồi chủ động nhớ lại, bạn có cơ hội luyện đường dẫn truy xuất. Khoảng cách phù hợp phụ thuộc vào độ khó và thời điểm cần dùng kiến thức.</p>
+              <p><strong>Bước bốn: thay đổi cách tiếp cận.</strong> Ôn một ý bằng câu hỏi tự luận, ví dụ thực tế, sơ đồ hoặc giải thích cho người khác. Thay đổi vừa phải giúp kiểm tra xem bạn hiểu ý nghĩa hay chỉ quen với một cách trình bày cụ thể.</p>
+              <p><strong>Bước năm: giữ lại tín hiệu hữu ích.</strong> Nếu một địa điểm hoặc nghi thức nhỏ giúp bạn bắt đầu học, hãy tận dụng nó để hình thành thói quen. Đồng thời, tránh phụ thuộc hoàn toàn vào tín hiệu ấy. Thỉnh thoảng thử ôn ở một nơi khác để kiến thức không chỉ “hoạt động” trong một căn phòng.</p>
+
+              <h3 id="section-9">9. Thiết kế một lượt ôn tập ngắn</h3>
+              <p>Chọn một chủ đề và viết ba câu hỏi trước khi bắt đầu: “Ý chính là gì?”, “Bằng chứng hoặc ví dụ nào hỗ trợ nó?” và “Khi nào ý này có thể không đúng?”. Đọc tài liệu một lượt để hiểu, sau đó che phần giải thích và trả lời từng câu bằng trí nhớ.</p>
+              <p>Đánh dấu những điểm chưa nhớ được, không đánh dấu mọi câu quan trọng như nhau. Mở ghi chú để kiểm tra câu trả lời, rồi bổ sung một gợi ý ngắn ngay cạnh chỗ còn mơ hồ. Cuối lượt học, thử áp dụng khái niệm vào một ví dụ chưa xuất hiện trong bài.</p>
+              <p>Ở lần ôn sau, bắt đầu bằng câu hỏi thay vì bắt đầu bằng việc đọc lại toàn bộ trang. Nếu không thể nhớ, hãy xem một gợi ý nhỏ trước khi đọc lời giải. Mục tiêu không phải ép bản thân nhớ bằng mọi giá, mà là tìm được mức hỗ trợ vừa đủ để tự nối lại các ý.</p>
+
+              <h3 id="section-10">10. Giới hạn và những cách hiểu sai</h3>
+              <p><span data-evidence="uncertain"><mark class="selectable-highlight" data-selection="uncertain" role="button" tabindex="0" aria-pressed="false">Cơ chế ấy</mark> có thể xuất hiện trong nhiều tình huống thường ngày, nhưng không phải lúc nào cũng đủ để xác định chính xác một ký ức.</span> Một tín hiệu có thể gợi ra nhiều sự kiện khác nhau; ký ức cũng có thể bị ảnh hưởng bởi thông tin ta nghe sau sự kiện hoặc bởi cách câu hỏi dẫn dắt.</p>
+              <p>Mẩu ghi chú không có định nghĩa hay câu giải thích kèm theo: <mark class="selectable-highlight" data-selection="unsupported" role="button" tabindex="0" aria-pressed="false">XK-17 / xanh / 04</mark>. Khi thiếu ngữ cảnh, dừng lại sẽ đáng tin hơn đoán bừa.</p>
+              <p>Vì vậy, không nên xem một cảm giác “nhớ rất rõ” là bằng chứng chắc chắn rằng mọi chi tiết đều chính xác. Khi cần độ tin cậy cao, hãy kiểm tra nguồn độc lập, phân biệt điều mình trực tiếp nhớ với điều mình suy ra, và ghi lại mức độ chắc chắn thay vì lấp chỗ trống bằng phỏng đoán.</p>
+              <p>Ngữ cảnh là một yếu tố trong hệ thống rộng hơn gồm chú ý, kiến thức nền, giấc ngủ, luyện tập và động lực. Nếu một tín hiệu không giúp nhớ lại, điều đó không chứng minh rằng kiến thức đã biến mất. Có thể cần một gợi ý khác, thêm thời gian hoặc một cách diễn đạt khác để tìm đúng đường truy xuất.</p>
+
+              <h3 id="section-11">11. Tóm tắt và câu hỏi tự kiểm tra</h3>
+              <p>Ngữ cảnh lúc học có thể để lại những gợi ý hỗ trợ truy xuất. Sự trùng khớp giữa lúc học và lúc nhớ đôi khi có ích, nhưng không phải điều kiện bắt buộc để học tốt. Gợi ý rõ nghĩa, luyện truy xuất chủ động, ôn cách quãng và liên kết kiến thức với nhiều ví dụ giúp ta nhớ linh hoạt hơn.</p>
+              <p>Hãy thử trả lời mà không nhìn lại: Trí nhớ gồm những giai đoạn nào? Thí nghiệm của Godden và Baddeley minh họa điều gì, và không chứng minh điều gì? Vì sao một gợi ý cụ thể thường hữu ích hơn một tín hiệu quá chung? Bạn có thể thay đổi buổi ôn tiếp theo để kiểm tra khả năng truy xuất trong bối cảnh khác như thế nào?</p>
+            </div>
+            <div class="note-rule"></div>
+            <div class="note-footer"><span>Bài giảng <span aria-hidden="true">·</span> <span id="highlightCount">0 đoạn bạn tô</span></span><span>Riêng tư</span></div>
+            <div class="inline-note" id="inlineNote" role="status">Đã thêm giải thích vào cuối ghi chú.</div>
+            <span class="selection-label" id="selectionText" hidden>trí nhớ phụ thuộc ngữ cảnh</span>
+          </article>
+
+          <section class="ai-panel" id="aiPanel" aria-label="Giải thích từ AI" aria-live="polite" hidden>
+            <div class="panel-top">
+              <div class="ai-label"><span class="ai-spark" aria-hidden="true">✳</span> Giải thích ngữ cảnh</div>
+              <button class="close-button" id="closeButton" type="button" aria-label="Đóng giải thích" title="Đóng">×</button>
+            </div>
+            <div class="panel-content">
+              <p class="panel-kicker">Ý chính</p>
+              <p class="explanation" id="explanation"></p>
+              <div class="uncertainty" id="uncertainty" role="status"></div>
+              <div class="evidence-box">
+                <div class="evidence-title"><span class="evidence-swatch" aria-hidden="true"></span> Câu làm căn cứ</div>
+                <p class="evidence-copy" id="evidenceCopy"></p>
+              </div>
+              <p class="source-limit" id="sourceLimit"></p>
+              <button class="save-note" id="saveNoteButton" type="button">Thêm vào ghi chú</button>
+            </div>
+          </section>
+        </div>
+
+        <div class="reader-toolbar" aria-label="Công cụ đọc bài">
+          <div class="reader-tool-group">
+            <button class="reader-tool" id="fontDown" type="button" aria-label="Giảm cỡ chữ" title="Giảm cỡ chữ">A−</button>
+            <span class="reader-scale" id="fontScale">100%</span>
+            <button class="reader-tool" id="fontUp" type="button" aria-label="Tăng cỡ chữ" title="Tăng cỡ chữ">A+</button>
+            <span class="reader-divider" aria-hidden="true"></span>
+            <button class="reader-tool" id="resetButton" type="button" title="Đặt lại chế độ đọc">↺ Đặt lại</button>
+          </div>
+          <div class="reader-tool-group">
+            <button class="reader-tool" id="previousSection" type="button" aria-label="Mục trước" title="Mục trước">‹</button>
+            <span class="reader-position" id="sectionPosition">1 / 11</span>
+            <button class="reader-tool" id="nextSection" type="button" aria-label="Mục tiếp theo" title="Mục tiếp theo">›</button>
+          </div>
+        </div>
+
+        <div class="experiment-bar" aria-label="Chọn ví dụ ngữ cảnh">
+          <span class="experiment-label">Thử nhanh</span>
+          <div class="mode-switch" role="group" aria-label="Đoạn văn bản để kiểm tra">
+            <button class="mode-button" type="button" data-mode="context" aria-pressed="true">Đủ ngữ cảnh</button>
+            <button class="mode-button" type="button" data-mode="uncertain" aria-pressed="false">Thiếu ngữ cảnh</button>
+          </div>
+        </div>
+        <div class="helpful-row">
+          <strong>Nội dung này có hữu ích không?</strong>
+          <button class="helpful-button" id="helpfulYes" type="button" aria-label="Có, hữu ích" aria-pressed="false">👍</button>
+          <button class="helpful-button" id="helpfulNo" type="button" aria-label="Chưa hữu ích" aria-pressed="false">👎</button>
+        </div>
+        <footer class="lesson-navigation">
+          <button class="lesson-nav-button" id="previousSectionFooter" type="button">‹ <span>Mục trước</span></button>
+          <button class="lesson-nav-button primary" id="nextSectionFooter" type="button"><span>Đi tới mục tiếp theo</span> ›</button>
+        </footer>
+      </main>
+    </div>
+  </div>
+  <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+  <button class="explain-button" id="explainButton" type="button" aria-label="Giải thích ngữ cảnh" hidden>
+    <span class="button-glyph" aria-hidden="true">✦</span> Giải thích ngữ cảnh
+  </button>
+  <div class="selection-toolbar" id="selectionToolbar" aria-label="Công cụ tô sáng văn bản" hidden>
+    <button class="selection-action" id="highlightSelection" type="button">Tô sáng</button>
+    <button class="selection-action" id="removeHighlight" type="button" hidden>Gỡ tô sáng</button>
+  </div>
+
+  <script>
+    const explanations = {
+      context: {
+        phrase: "trí nhớ phụ thuộc ngữ cảnh",
+        explanation: "Ý này nói rằng môi trường lúc học tạo ra những tín hiệu gắn với ký ức. Khi quay lại môi trường tương tự, các tín hiệu đó giúp bạn truy xuất kiến thức dễ hơn.",
+        evidence: "Điều này giúp giải thích vì sao việc quay lại môi trường học tập quen thuộc có thể khiến ta nhớ lại kiến thức dễ dàng hơn.",
+        count: "Tóm tắt dựa trên 2 câu văn xung quanh.",
+        evidenceKey: "context",
+        uncertainty: ""
+      },
+      cues: {
+        phrase: "địa điểm, tâm trạng hoặc âm thanh",
+        explanation: "Khi một ký ức được hình thành, những tín hiệu có mặt cùng lúc cũng có thể gắn với nó. Sau này, các tín hiệu này giúp gợi lại thông tin đã học.",
+        evidence: "Những tín hiệu xuất hiện cùng lúc cũng được liên kết với ký ức đó.",
+        count: "Tóm tắt dựa trên 1 câu văn xung quanh.",
+        evidenceKey: "cues",
+        uncertainty: ""
+      },
+      encoding: {
+        phrase: "Mã hóa",
+        explanation: "Mã hóa là bước đưa thông tin được chú ý thành một biểu diễn mà não có thể xử lý và liên kết với kiến thức đã có.",
+        evidence: "Mã hóa là lúc thông tin được chú ý và chuyển thành một biểu diễn mà não có thể xử lý.",
+        count: "Tóm tắt dựa trên câu mô tả giai đoạn mã hóa.",
+        evidenceKey: "encoding",
+        uncertainty: ""
+      },
+      distinct: {
+        phrase: "có tính phân biệt",
+        explanation: "Một gợi ý hữu ích giúp thu hẹp khả năng cần tìm, thay vì liên hệ được với quá nhiều ký ức khác nhau.",
+        evidence: "Một tín hiệu quá chung có thể gắn với hàng nghìn trải nghiệm; ví dụ cụ thể thường thu hẹp phạm vi tìm kiếm.",
+        count: "Tóm tắt dựa trên câu giải thích cách chọn gợi ý truy xuất.",
+        evidenceKey: "distinct",
+        uncertainty: ""
+      },
+      review: {
+        phrase: "luyện nhớ trước khi xem đáp án",
+        explanation: "Hãy thử tự gọi lại kiến thức trước, rồi mới mở tài liệu để kiểm tra và sửa phần còn thiếu. Cách này giúp lộ rõ chỗ chưa nhớ.",
+        evidence: "Đóng ghi chú, viết ra điều mình nhớ hoặc tự giải thích khái niệm thành tiếng.",
+        count: "Tóm tắt dựa trên câu hướng dẫn luyện truy xuất chủ động.",
+        evidenceKey: "review",
+        uncertainty: ""
+      },
+      experiment: {
+        phrase: "môi trường kiểm tra trùng với môi trường lúc học",
+        explanation: "Thí nghiệm minh họa rằng người tham gia nhớ tốt hơn khi môi trường kiểm tra giống môi trường họ đã học. Bối cảnh có thể đóng vai trò như một gợi ý truy xuất.",
+        evidence: "Thí nghiệm của Godden và Baddeley cho thấy thợ lặn nhớ từ tốt hơn khi môi trường kiểm tra trùng với môi trường lúc học.",
+        count: "Tóm tắt dựa trên 1 câu văn xung quanh.",
+        evidenceKey: "experiment",
+        uncertainty: ""
+      },
+      uncertain: {
+        phrase: "Cơ chế ấy",
+        explanation: "Có thể đoạn này đang nói về cách tín hiệu môi trường hỗ trợ việc nhớ lại, nhưng chưa đủ dữ kiện để xác định chính xác cơ chế nào.",
+        evidence: "Cơ chế ấy có thể xuất hiện trong nhiều tình huống thường ngày, nhưng không phải lúc nào cũng đủ để xác định chính xác một ký ức.",
+        count: "Tóm tắt dựa trên 1 câu văn xung quanh.",
+        evidenceKey: "uncertain",
+        uncertainty: "Chưa đủ thông tin xung quanh để xác định rõ ngữ cảnh. Đây chỉ là một suy đoán chung."
+      },
+      unsupported: {
+        phrase: "XK-17 / xanh / 04",
+        explanation: "Tôi không thể giải thích đoạn này!",
+        evidence: "",
+        count: "",
+        evidenceKey: null,
+        uncertainty: ""
+      }
+    };
+
+    const selectionText = document.getElementById("selectionText");
+    const aiPanel = document.getElementById("aiPanel");
+    const studyLayout = document.querySelector(".study-layout");
+    const explanation = document.getElementById("explanation");
+    const evidenceBox = document.querySelector(".evidence-box");
+    const panelKicker = document.querySelector(".panel-kicker");
+    const evidenceCopy = document.getElementById("evidenceCopy");
+    const sourceLimit = document.getElementById("sourceLimit");
+    const uncertainty = document.getElementById("uncertainty");
+    const saveNoteButton = document.getElementById("saveNoteButton");
+    const inlineNote = document.getElementById("inlineNote");
+    const feedback = document.getElementById("feedback");
+    const noteCopy = document.getElementById("noteCopy");
+    const selectionToolbar = document.getElementById("selectionToolbar");
+    const highlightCount = document.getElementById("highlightCount");
+    const highlightSelectionButton = document.getElementById("highlightSelection");
+    const removeHighlightButton = document.getElementById("removeHighlight");
+    const appShell = document.getElementById("appShell");
+    const sidebarBackdrop = document.getElementById("sidebarBackdrop");
+    const lessonSections = [...document.querySelectorAll("#noteCopy h3")];
+    const progressLabel = document.getElementById("progressLabel");
+    const progressFill = document.getElementById("progressFill");
+    const sectionPosition = document.getElementById("sectionPosition");
+    const fontScale = document.getElementById("fontScale");
+    let selectedSegment = "context";
+    let feedbackTimer;
+    let activeSection = 0;
+    let readerFontSize = 16;
+
+    function closeExplanation() {
+      aiPanel.hidden = true;
+      studyLayout.classList.remove("panel-open");
+      document.getElementById("explainButton").hidden = true;
+      document.querySelectorAll("[data-original-evidence]").forEach((sentence) => {
+        sentence.classList.remove("evidence-highlight");
+        sentence.removeAttribute("data-original-evidence");
+      });
+    }
+
+    function showExplanation() {
+      const result = explanations[selectedSegment];
+      const unsupported = selectedSegment === "unsupported";
+      document.getElementById("explainButton").hidden = true;
+      explanation.textContent = result.explanation;
+      evidenceCopy.textContent = result.evidence;
+      sourceLimit.textContent = result.count;
+      uncertainty.textContent = result.uncertainty;
+      uncertainty.classList.toggle("visible", Boolean(result.uncertainty));
+      evidenceBox.hidden = unsupported;
+      sourceLimit.hidden = unsupported;
+      panelKicker.hidden = unsupported;
+      saveNoteButton.hidden = unsupported;
+      saveNoteButton.disabled = false;
+      saveNoteButton.textContent = "Thêm vào ghi chú";
+      aiPanel.hidden = false;
+      studyLayout.classList.add("panel-open");
+      const target = result.evidenceKey
+        ? document.querySelector(`[data-evidence="${result.evidenceKey}"]`)
+        : null;
+      if (target) {
+        target.dataset.originalEvidence = "true";
+        target.classList.add("evidence-highlight");
+      }
+      aiPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    function selectSegment(segment, highlight = null) {
+      selectedSegment = segment;
+      const result = explanations[segment];
+      selectionText.textContent = result.phrase;
+      document.querySelectorAll(".selectable-highlight").forEach((highlight) => {
+        highlight.setAttribute("aria-pressed", String(highlight.dataset.selection === segment));
+      });
+      document.querySelectorAll(".mode-button").forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.mode === segment));
+      });
+      closeExplanation();
+      inlineNote.classList.remove("visible");
+      if (highlight) {
+        const explainButton = document.getElementById("explainButton");
+        const bounds = highlight.getBoundingClientRect();
+        explainButton.hidden = false;
+        const left = Math.max(8, Math.min(
+          window.innerWidth - explainButton.offsetWidth - 8,
+          bounds.left + bounds.width / 2 - explainButton.offsetWidth / 2
+        ));
+        const top = bounds.bottom + explainButton.offsetHeight + 12 <= window.innerHeight
+          ? bounds.bottom + 8
+          : Math.max(8, bounds.top - explainButton.offsetHeight - 8);
+        explainButton.style.left = `${left}px`;
+        explainButton.style.top = `${top}px`;
+      }
+    }
+
+    function showFeedback(message) {
+      feedback.textContent = message;
+      feedback.classList.add("visible");
+      window.clearTimeout(feedbackTimer);
+      feedbackTimer = window.setTimeout(() => feedback.classList.remove("visible"), 2300);
+    }
+
+    function getNoteSelection() {
+      const selection = window.getSelection();
+      if (!selection || selection.isCollapsed || selection.rangeCount === 0) return null;
+
+      const range = selection.getRangeAt(0);
+      if (!noteCopy.contains(range.commonAncestorContainer)) return null;
+
+      const startElement = range.startContainer.nodeType === Node.ELEMENT_NODE
+        ? range.startContainer
+        : range.startContainer.parentElement;
+      const endElement = range.endContainer.nodeType === Node.ELEMENT_NODE
+        ? range.endContainer
+        : range.endContainer.parentElement;
+      const startParagraph = startElement.closest("p");
+      const endParagraph = endElement.closest("p");
+      if (!startParagraph || startParagraph !== endParagraph) return null;
+
+      const interactiveHighlight = [...startParagraph.querySelectorAll(".selectable-highlight")]
+        .some((highlight) => range.intersectsNode(highlight));
+      if (interactiveHighlight) return null;
+
+      const highlights = [...startParagraph.querySelectorAll(".user-highlight")]
+        .filter((highlight) => range.intersectsNode(highlight));
+      return { range, highlights };
+    }
+
+    function updateSelectionToolbar() {
+      const noteSelection = getNoteSelection();
+      if (!noteSelection) {
+        selectionToolbar.hidden = true;
+        return;
+      }
+
+      highlightSelectionButton.hidden = noteSelection.highlights.length > 0;
+      removeHighlightButton.hidden = noteSelection.highlights.length === 0;
+      selectionToolbar.hidden = false;
+      const bounds = noteSelection.range.getBoundingClientRect();
+      const left = Math.max(8, Math.min(
+        window.innerWidth - selectionToolbar.offsetWidth - 8,
+        bounds.left + bounds.width / 2 - selectionToolbar.offsetWidth / 2
+      ));
+      selectionToolbar.style.left = `${left}px`;
+      selectionToolbar.style.top = `${Math.max(8, bounds.top - selectionToolbar.offsetHeight - 8)}px`;
+    }
+
+    function finishHighlightAction(message) {
+      window.getSelection()?.removeAllRanges();
+      selectionToolbar.hidden = true;
+      highlightCount.textContent = `${noteCopy.querySelectorAll(".user-highlight").length} đoạn bạn tô`;
+      showFeedback(message);
+    }
+
+    function highlightSelectedText() {
+      const noteSelection = getNoteSelection();
+      if (!noteSelection) return;
+
+      const textNodes = [];
+      const walker = document.createTreeWalker(noteCopy, NodeFilter.SHOW_TEXT, {
+        acceptNode(node) {
+          if (!noteSelection.range.intersectsNode(node)) return NodeFilter.FILTER_REJECT;
+          if (node.parentElement.closest(".user-highlight, .selectable-highlight")) return NodeFilter.FILTER_REJECT;
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      });
+      while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+      textNodes.reverse().forEach((textNode) => {
+        const start = noteSelection.range.startContainer === textNode ? noteSelection.range.startOffset : 0;
+        const end = noteSelection.range.endContainer === textNode ? noteSelection.range.endOffset : textNode.length;
+        if (start >= end) return;
+
+        const selectedText = textNode.splitText(start);
+        selectedText.splitText(end - start);
+        const mark = document.createElement("mark");
+        mark.className = "user-highlight";
+        selectedText.parentNode.insertBefore(mark, selectedText);
+        mark.appendChild(selectedText);
+      });
+
+      finishHighlightAction("Đã tô sáng đoạn bạn chọn");
+    }
+
+    function removeSelectedHighlight() {
+      const noteSelection = getNoteSelection();
+      if (!noteSelection) return;
+
+      noteSelection.highlights.forEach((highlight) => {
+        const parent = highlight.parentNode;
+        while (highlight.firstChild) parent.insertBefore(highlight.firstChild, highlight);
+        highlight.remove();
+      });
+      finishHighlightAction("Đã gỡ tô sáng");
+    }
+
+    function setActiveSection(index) {
+      activeSection = Math.max(0, Math.min(index, lessonSections.length - 1));
+      const position = `${activeSection + 1} / ${lessonSections.length}`;
+      progressLabel.textContent = position;
+      sectionPosition.textContent = position;
+      progressFill.style.width = `${((activeSection + 1) / lessonSections.length) * 100}%`;
+      document.querySelectorAll(".course-nav-link[data-section-index]").forEach((link) => {
+        link.classList.toggle("current", Number(link.dataset.sectionIndex) === activeSection);
+      });
+    }
+
+    function updateActiveSection() {
+      let index = 0;
+      lessonSections.forEach((section, sectionIndex) => {
+        if (section.getBoundingClientRect().top < 150) index = sectionIndex;
+      });
+      setActiveSection(index);
+    }
+
+    function navigateSection(direction) {
+      const nextIndex = Math.max(0, Math.min(activeSection + direction, lessonSections.length - 1));
+      lessonSections[nextIndex].scrollIntoView({ behavior: "smooth", block: "start" });
+      setActiveSection(nextIndex);
+    }
+
+    function toggleSidebar() {
+      if (window.matchMedia("(max-width: 760px)").matches) {
+        const isOpen = appShell.classList.toggle("sidebar-open");
+        sidebarBackdrop.hidden = !isOpen;
+      } else {
+        appShell.classList.toggle("sidebar-collapsed");
+      }
+    }
+
+    document.getElementById("explainButton").addEventListener("click", showExplanation);
+    document.getElementById("closeButton").addEventListener("click", closeExplanation);
+    document.querySelectorAll(".selectable-highlight").forEach((highlight) => {
+      highlight.addEventListener("click", () => selectSegment(highlight.dataset.selection, highlight));
+      highlight.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          selectSegment(highlight.dataset.selection, highlight);
+        }
+      });
+    });
+    document.querySelectorAll(".mode-button").forEach((button) => {
+      button.addEventListener("click", () => {
+        const highlight = document.querySelector(`.selectable-highlight[data-selection="${button.dataset.mode}"]`);
+        selectSegment(button.dataset.mode, highlight);
+      });
+    });
+    saveNoteButton.addEventListener("click", () => {
+      inlineNote.textContent = `Giải thích: ${explanations[selectedSegment].explanation}`;
+      inlineNote.classList.add("visible");
+      saveNoteButton.disabled = true;
+      saveNoteButton.textContent = "Đã thêm vào ghi chú";
+      showFeedback("Đã thêm vào ghi chú của bạn");
+    });
+    document.getElementById("resetButton").addEventListener("click", () => {
+      selectSegment("context");
+      inlineNote.classList.remove("visible");
+      inlineNote.textContent = "Đã thêm giải thích vào cuối ghi chú.";
+      readerFontSize = 16;
+      noteCopy.style.setProperty("--reader-size", `${readerFontSize}px`);
+      fontScale.textContent = "100%";
+      showFeedback("Đã trở về ghi chú ban đầu");
+    });
+    document.getElementById("askAIButton").addEventListener("click", showExplanation);
+    document.getElementById("sidebarToggle").addEventListener("click", toggleSidebar);
+    document.getElementById("outlineClose").addEventListener("click", toggleSidebar);
+    sidebarBackdrop.addEventListener("click", toggleSidebar);
+    document.querySelectorAll(".course-nav-link[data-section-index]").forEach((link) => {
+      link.addEventListener("click", () => {
+        setActiveSection(Number(link.dataset.sectionIndex));
+        if (window.matchMedia("(max-width: 760px)").matches) toggleSidebar();
+      });
+    });
+    document.addEventListener("scroll", updateActiveSection, { passive: true });
+    document.getElementById("previousSection").addEventListener("click", () => navigateSection(-1));
+    document.getElementById("nextSection").addEventListener("click", () => navigateSection(1));
+    document.getElementById("previousSectionFooter").addEventListener("click", () => navigateSection(-1));
+    document.getElementById("nextSectionFooter").addEventListener("click", () => navigateSection(1));
+    document.getElementById("fontDown").addEventListener("click", () => {
+      readerFontSize = Math.max(14, readerFontSize - 1);
+      noteCopy.style.setProperty("--reader-size", `${readerFontSize}px`);
+      fontScale.textContent = `${Math.round(readerFontSize / 16 * 100)}%`;
+    });
+    document.getElementById("fontUp").addEventListener("click", () => {
+      readerFontSize = Math.min(22, readerFontSize + 1);
+      noteCopy.style.setProperty("--reader-size", `${readerFontSize}px`);
+      fontScale.textContent = `${Math.round(readerFontSize / 16 * 100)}%`;
+    });
+    [["helpfulYes", "Cảm ơn bạn đã phản hồi"], ["helpfulNo", "Đã ghi nhận góp ý của bạn"]].forEach(([id, message]) => {
+      document.getElementById(id).addEventListener("click", () => {
+        document.querySelectorAll(".helpful-button").forEach((button) => button.setAttribute("aria-pressed", String(button.id === id)));
+        showFeedback(message);
+      });
+    });
+    updateActiveSection();
+    document.addEventListener("selectionchange", updateSelectionToolbar);
+    selectionToolbar.addEventListener("mousedown", (event) => event.preventDefault());
+    highlightSelectionButton.addEventListener("click", highlightSelectedText);
+    removeHighlightButton.addEventListener("click", removeSelectedHighlight);
+  </script>
+</body>
+</html>
